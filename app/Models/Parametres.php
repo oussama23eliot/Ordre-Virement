@@ -49,7 +49,7 @@ class Parametres extends Model
         if (empty($model)) {
             $model = self::create([
                 'key' => $key,
-                'value' =>  null
+                'value' =>  $value
             ]);
             self::$settings->push($model);
         } else {

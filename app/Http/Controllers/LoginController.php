@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class LoginController extends Controller
 {
@@ -37,7 +36,7 @@ class LoginController extends Controller
   public function Logout(Request $request)
   {
     if (!auth()->user()) {
-      return to_route('virements.index');
+      return to_route('getLogin');
     }
     Auth::logout();
     $request->session()->invalidate();

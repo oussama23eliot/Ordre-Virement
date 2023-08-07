@@ -18,6 +18,7 @@
     } from "flowbite-svelte";
     import { addToast } from "./Toast/store";
     import { banques } from "./utils/helperData";
+    import { afterUpdate, onMount } from "svelte";
 
     export let data;
 
@@ -35,15 +36,7 @@
     let _adresse_banque = false;
     let _rib = false;
     let _code_swift = false;
-    $: showSubmit =
-        _nom_societe ||
-        _adresse_societe ||
-        _numero_societe ||
-        _email_societe ||
-        _nom_banque ||
-        _adresse_banque ||
-        _rib ||
-        _code_swift;
+    let showSubmit =false;
     let form = useForm({
         nom_societe: data["nom_societe"],
         adresse_societe: data["adresse_societe"],
@@ -95,11 +88,24 @@
         event.target.value = $form.rib;
         if ($form.rib != data["rib"]) _rib = true;
         else _rib = false;
+        handleShowSubmit()
+
+    }
+    function handleShowSubmit(){
+        showSubmit =
+        _nom_societe ||
+        _adresse_societe ||
+        _numero_societe ||
+        _email_societe ||
+        _nom_banque ||
+        _adresse_banque ||
+        _rib ||
+        _code_swift;
     }
 </script>
 
 <form
-    class="container h-screen w-auto flex items-left justify-left flex-col gap-2 p-4 bg-primary mx-auto"
+    class="container h-full w-auto flex items-left justify-left flex-col gap-2 p-4 bg-primary mx-auto"
     on:submit|preventDefault={submit}
 >
     <div class="text-3xl w-full font-semibold">Profile de la Societé</div>
@@ -112,7 +118,7 @@
             {"*Vous avez ajouter des modification qu'il faut sauvgarder"}
         </p>
     {/if}
-    <div class="flex flex-row gap-4 w-full mt-4">
+    <div class="flex flex-col  sm:flex-row gap-4 w-full mt-4 mx-auto">
         <div class="w-full">
             <Label for="default-input" class="block mb-2 font-bold"
                 >Nom De Societé</Label
@@ -135,12 +141,14 @@
 
                 <Input
                     id="default-input"
-                    class="border-transparent bg-transparent pl-1"
-                    placeholder="Default input"
+                    class="border-transparent focus:bg-gray-50 bg-transparent pl-1"
+                    placeholder="Entrez le nom de la sociéte..."
                     on:input={() => {
+                        console.log($form.nom_societe, data["nom_societe"],_nom_societe);
                         if ($form.nom_societe != data["nom_societe"])
                             _nom_societe = true;
                         else _nom_societe = false;
+                        handleShowSubmit()
                     }}
                     bind:value={$form.nom_societe}
                 />
@@ -173,19 +181,21 @@
 
                 <Input
                     id="default-input"
-                    class="border-transparent bg-transparent pl-1"
-                    placeholder="Default input"
+                    class="border-transparent focus:bg-gray-50 bg-transparent pl-1"
+                    placeholder="Entrez l'adresse de la société..."
                     on:input={() => {
                         if ($form.adresse_societe != data["adresse_societe"])
                             _adresse_societe = true;
                         else _adresse_societe = false;
+                        handleShowSubmit()
+
                     }}
                     bind:value={$form.adresse_societe}
                 />
             </div>
         </div>
     </div>
-    <div class="flex flex-row gap-4 w-full mt-4">
+    <div class="flex flex-col  sm:flex-row  gap-4 w-full mt-4">
         <div class="w-full">
             <Label for="default-input" class="block mb-2 font-bold"
                 >Numéro Téléphone</Label
@@ -208,12 +218,14 @@
                 <Input
                     type="number"
                     id="default-input"
-                    class="border-transparent bg-transparent pl-1"
-                    placeholder="Default input"
+                    class="border-transparent focus:bg-gray-50 bg-transparent pl-1"
+                    placeholder="Entrez le numéro de la société..."
                     on:input={() => {
                         if ($form.numero_societe != data["numero_societe"])
                             _numero_societe = true;
                         else _numero_societe = false;
+                        handleShowSubmit()
+
                     }}
                     bind:value={$form.numero_societe}
                 />
@@ -241,13 +253,15 @@
                 <Input
                     type="email"
                     id="default-input"
-                    class="border-transparent bg-transparent pl-1"
-                    placeholder="Default input"
+                    class="border-transparent focus:bg-gray-50 bg-transparent pl-1"
+                    placeholder="Entrez l'email de la société"
                     on:input={() => {
                         console.log($form.email_societe, data["email_societe"]);
                         if ($form.email_societe != data["email_societe"])
                             _email_societe = true;
                         else _email_societe = false;
+                        handleShowSubmit()
+
                     }}
                     bind:value={$form.email_societe}
                 />
@@ -256,7 +270,7 @@
     </div>
     <div class="text-3xl w-full font-semibold mt-16">Informations Bancaire</div>
     <hr />
-    <div class="flex flex-row gap-4 w-full mb-4 mt-4">
+    <div class="flex flex-col  sm:flex-row  gap-4 w-full mb-4 mt-4">
         <div class="w-full">
             <Label for="default-input" class="block mb-2 font-bold"
                 >Nom De Banque</Label
@@ -272,14 +286,29 @@
                     alt="logo banque"
                 />
                 <p transition:slide class="text-black-500">
-                    {selected.name || "choisir une banque..."}
+                    {selected.name || "Selectionez la banque..."}
                 </p>
                 <Chevron class="float-right" /></Button
             >
             <Dropdown
                 class="w-50  items-center z-2000 overflow-y-auto py-1 h-48 "
                 open={!selected}
-                >{#each banques as banque}
+                >
+                <DropdownItem
+                        class="text-base flex flex-row pt-auto font-semibold gap-2 "
+                        on:click={() => {
+                            selected = {name:"null"};
+                            $form.nom_banque = null;
+                            if ($form.nom_banque != data["nom_banque"])
+                                _nom_banque = true;
+                            else _nom_banque = false;
+                             handleShowSubmit()
+
+                        }}
+                    >
+                        <p class="my-auto mx-20">null</p>
+                    </DropdownItem>
+                {#each banques as banque}
                     <DropdownItem
                         class=" text-base flex flex-row pt-auto font-semibold gap-2 "
                         on:click={() => {
@@ -288,6 +317,8 @@
                             if ($form.nom_banque != data["nom_banque"])
                                 _nom_banque = true;
                             else _nom_banque = false;
+                             handleShowSubmit()
+
                         }}
                     >
                         <img
@@ -324,12 +355,14 @@
                 <Input
                     type="text"
                     id="default-input"
-                    class="border-transparent bg-transparent pl-1"
-                    placeholder="Default input"
+                    class="border-transparent focus:bg-gray-50 bg-transparent pl-1"
+                    placeholder="Entrez l'adresse de l'agence bancaire..."
                     on:input={() => {
                         if ($form.adresse_banque != data["adresse_banque"])
                             _adresse_banque = true;
                         else _adresse_banque = false;
+                        handleShowSubmit()
+
                     }}
                     bind:value={$form.adresse_banque}
                 />
@@ -337,7 +370,7 @@
         </div>
     </div>
 
-    <div class="flex flex-row gap-4 w-full mb-4">
+    <div class="flex flex-col sm:flex-row gap-4 w-full mb-4">
         <div class="w-full">
             <Label for="default-input" class="block mb-2 font-bold"
                 >Numéro du compte Bancaire</Label
@@ -369,12 +402,13 @@
                     type="number"
                     name="rib"
                     bind:value={inputRib}
-                    class="border-transparent  bg-transparent border-2 focus:ring-0 focus:{$form
-                        .rib.length == 24
+    
+                    class="border-transparent focus:bg-gray-50  bg-transparent border-2 focus:ring-0 focus:{$form
+                        .rib?.length == 24
                         ? 'border-green-500'
                         : ''} "
                     pl-1
-                    placeholder="rib code..."
+                    placeholder="Entrez le code RIB code..."
                     on:input={check}
                     min="0"
                 />
@@ -408,17 +442,19 @@
                 <Input
                     type="text"
                     id="default-input"
-                    class="border-transparent bg-transparent pl-1 border-2 focus:ring-0 focus:{$form
+                    class="border-transparent focus:bg-gray-50 bg-transparent pl-1 border-2 focus:ring-0 focus:{$form
                         .code_swift.length >= 8
                         ? 'border-green-500'
                         : ''} "
                     maxlength="11"
-                    placeholder="Default input"
+                    placeholder="Entrez le code swift..."
                     bind:value={$form.code_swift}
                     on:input={() => {
                         if ($form.code_swift != data["code_swift"])
                             _code_swift = true;
                         else _code_swift = false;
+                        handleShowSubmit()
+
                     }}
                 />
             </div>

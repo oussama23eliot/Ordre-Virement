@@ -60,6 +60,7 @@
     function submit() {
         loader = true;
         if (updating) {
+            console.log($form)
             $form.put(`/virements/${updateData.id}`, {
                 onSuccess: () => {
                     handleToast();
@@ -75,6 +76,7 @@
             $form.post("/virements", {
                 onSuccess: () => {
                     handleToast();
+                    $form.reset();
                     loader = false;
                     formModal = false;
                 },
@@ -94,9 +96,11 @@
         event.target.value = $form.rib;
     }
     $: btnContent = updating ? "Modifier" : "Ajouter";
+    console.log($page);
+
 </script>
 
-<div class="">
+<div class="" >
     <div class=" ">
         {#if !updating}
             <Button
@@ -141,7 +145,7 @@
             >
         {/if}
 
-        <Modal bind:open={formModal} size="xs" class="w-full">
+        <Modal bind:open={formModal} style="z-index: 2;" size="xs" class="w-full">
             <form
                 class="flex flex-col space-y-6 formy"
                 on:submit|preventDefault={submit}
@@ -182,7 +186,7 @@
                         {#each $page.props.fournisseurs as { id, nom_beneficiaire }}
                             <option
                                 value={id}
-                                selected={$form.beneficiaire_id == id}
+                                selected={$form?.beneficiaire_id == id}
                                 >{nom_beneficiaire}</option
                             >
                         {/each}
@@ -340,7 +344,13 @@
                             type="number"
                             name="rib"
                             bind:value={inputRib}
-                            class="border-orange-500"
+                            class="border-orange-500  focus:ring-0 focus:{$form
+                                .rib?.length == 24
+                                ? 'border-green-500 border-2'
+                                : ''} {$form
+                                .rib?.length == 24
+                                ? 'border-green-500 '
+                                : ''}"
                             placeholder="rib code..."
                             on:input={check}
                             min="0"
@@ -362,7 +372,14 @@
                             type="text"
                             name="code_swift"
                             bind:value={$form.code_swift}
-                            class="border-orange-500"
+                            class="border-orange-500 focus:ring-0 focus:{$form
+                                .code_swift?.length >= 8
+                                ? 'border-green-500 border-2'
+                                : ''}
+                                {$form
+                                    .code_swift?.length >= 8
+                                    ? 'border-green-500 '
+                                    : ''}"
                             placeholder="code swift..."
                             maxlength="11"
                             required

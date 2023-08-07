@@ -22,11 +22,11 @@ use Illuminate\Support\Facades\Route;
 Route::post("/login", [LoginController::class, "Login"])->name("login");
 Route::get("/login", [LoginController::class, "getLogin"])->name("getLogin");
 
-Route::get("/logout", [LoginController::class, "Logout"])->name("logout");
+Route::post("/logout", [LoginController::class, "Logout"])->name("logout")->middleware("auth");
 
 
-Route::get('/virements/pdf/{id}', [VirementsController::class, 'generate_pdf']);
-Route::resource('virements', VirementsController::class);
+Route::get('/virements/pdf/{id}', [VirementsController::class, 'generate_pdf'])->middleware("auth");
+Route::resource('virements', VirementsController::class)->middleware("auth");
 
-Route::get('/parametres', [ParametresController::class, 'index'])->name('params');
-Route::put('/parametres', [ParametresController::class, 'updateAll']);
+Route::get('/parametres', [ParametresController::class, 'index'])->middleware("auth")->name('params');
+Route::put('/parametres', [ParametresController::class, 'updateAll'])->middleware("auth");

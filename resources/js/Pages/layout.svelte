@@ -25,6 +25,7 @@
     };
     import { router } from "@inertiajs/svelte";
     import { beforeUpdate, onMount } from "svelte";
+    import SmallModal from "./SmallModal.svelte";
     beforeUpdate(() => {
         if ($page.component == "Login") sidebar = false;
     });
@@ -35,6 +36,7 @@
     router.on("finish", () => {
         navigating = false;
     });
+    let openLogout=false;
 </script>
 
 <body class="relative bg-white dark:bg-gray-800">
@@ -43,8 +45,9 @@
             class="flex flex-row flex-wrap
     "
         >
+
             {#if $page.component != "Login"}
-                <SideBar bind:open={sidebar} />
+                <SideBar bind:open={sidebar} bind:openLogoutModal={openLogout} />
             {:else}
                 <SideBar open={false} />
             {/if}
@@ -108,8 +111,9 @@
                             in:fade={{ x: -200, duration: 300, delay: 300 }}
                             out:fade={{ x: 200, duration: 300 }}
                         >
+                            <SmallModal operation={"logout"} bind:popupModal={openLogout} />
                             {#key $page.component}
-                                <slot />
+                                <slot  />
                             {/key}
                         </div>
                     </div>

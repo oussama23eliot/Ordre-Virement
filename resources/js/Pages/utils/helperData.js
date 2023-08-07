@@ -73,4 +73,5 @@ export let banques = [
     },
 ];
 
-export let status = [{ name: "Brouillon", color: "red" }, { name: "En cours ", color: "yellow" }, { name: "Traité", color: "green" }]
+export let status = [{ name: "Brouillon", color: "red" }, { name: "En cours", color: "yellow" }, { name: "Traité", color: "green" }]
+export let filter = [{ name: "tout", color: "dark" },{ name: "Brouillon", color: "red" }, { name: "En cours", color: "yellow" }, { name: "Traité", color: "green" }]

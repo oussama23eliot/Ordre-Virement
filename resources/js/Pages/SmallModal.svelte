@@ -5,11 +5,11 @@
 
     import { page } from "@inertiajs/svelte";
 
-    let popupModal = false;
-    let loader = false;
-
+    export let popupModal = false;
     export let data;
     export let operation;
+
+    let loader = false;
     let form = useForm({
         id: data || operation,
     });
@@ -33,6 +33,7 @@
                     popupModal = false;
                 },
                 onError: () => {
+                    loader = false;
                     handleToast();
                 },
             });
@@ -45,6 +46,7 @@
                     popupModal = false;
                 },
                 onError: () => {
+                    loader = false;
                     handleToast();
                 },
             });
@@ -52,6 +54,7 @@
     }
 </script>
 
+{#if !operation}
 <Button on:click={() => (popupModal = true)} class="p-0">
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -68,6 +71,7 @@
         />
     </svg>
 </Button>
+{/if}
 
 <Modal bind:open={popupModal} class="z-2000" size="xs" autoclose>
     <div class="text-center">
@@ -86,11 +90,11 @@
             /></svg
         >
         <h3 class="mb-5 text-lg font-normal text-gray-700 dark:text-gray-400">
-            etes-vous sure de supprimer cet ordre de virement ?
+            {operation ? 'etes-vous sure de se déconnecter ?':'etes-vous sure de supprimer cet ordre de virement ?'}
         </h3>
-        <Button on:click={submit} type="submit" color={"green"} class="mr-2"
+        <Button on:click={submit} type="submit" color={operation ?"red":"blue"} class="mr-2"
             >{#if loader}
-                <Spinner class="mr-3" size="4" color="blue" />
+                <Spinner class="mr-3" size="4" color="blue"/>
             {:else}Oui, je suis sure{/if}</Button
         >
         <Button type="reset" color="alternative">Non, revenir</Button>

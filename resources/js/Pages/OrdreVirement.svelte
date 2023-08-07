@@ -14,20 +14,64 @@
         TableHeadCell,
         Badge,
         Tooltip,
+        Dropdown,DropdownItem,Label,Button,Chevron
     } from "flowbite-svelte";
-    import { status } from "./utils/helperData";
+    import { filter ,status} from "./utils/helperData";
     import { page } from "@inertiajs/svelte";
     import { handleInput2 } from "./utils/moneyFotmatter";
+
+    $: filtered= $page.props.orders;
+    $: selected= filter[0];
+
+    let openFilter = false;
+    const handleFiltering=(name)=>{
+        filtered = $page.props.orders?.filter((item)=>{
+            if(name=="tout") return item;
+            else{
+                if(item.status==name) return item
+            }
+        })
+    }
+
 </script>
 
 <div
-    class="container mx-auto z-0 mb-10 flex flex-col w-full h-fit min-h-screen px-4 items-center space-y-3"
+    class="container mx-auto  mb-10 flex flex-col w-full h-fit min-h-screen px-4 items-center gap-4"
 >
     <h1 class="text-3xl w-full font-semibold">Ordres de Virements</h1>
-    <div class="text-lg w-full text-right hover:text-undeline">
+    <div  class="text-lg w-full  text-right hover:text-undeline flex flex-row justify-between items-center">
+        <div class="text-left w-fit ml-10" >
+            <!-- <Label for="banque" class="mb-2 ">Status</Label> -->
+            <Button
+                class="w-full text-black focus:ring-0 flex flex-row justify-between border border-gray-300 "
+            >
+                <Badge
+                    color={filter.filter(
+                        (item) => item.name == selected.name
+                    )[0]?.color}>{selected.name}</Badge
+                >
+                <Chevron class="float-right " /></Button
+            >
+            <Dropdown bind:open={openFilter} style="z-index: 1;"
+                class="w-50 items-left  overflow-y-auto py-1 h-30 "
+                >{#each filter as fil}
+                    <DropdownItem
+                        class=" text-base flex flex-row pt-auto font-semibold gap-2 "
+                        on:click={()=>{
+                            selected=fil;
+                            openFilter=false;
+                            handleFiltering(selected.name)
+                        }
+                        }
+                    >
+                        <Badge color={fil.color}>{fil.name}</Badge>
+                    </DropdownItem>
+                {/each}
+            </Dropdown>
+        </div>
         <Index />
     </div>
-    <div class="w-full mx-auto">
+    <div class="w-full  mx-auto" style="z-index: 0;">
         <Table hoverable={true} shadow>
             <TableHead>
                 <TableHeadCell class="bg-gray-100 text-center">ID</TableHeadCell
@@ -40,20 +84,20 @@
                 <TableHeadCell>Actions</TableHeadCell>
             </TableHead>
             <TableBody class="divide-y">
-                {#each $page.props.orders as order (order.id)}
+                {#each filtered as order (order.id)}
                     <TableBodyRow>
                         <TableBodyCell class="bg-gray-100 text-center"
                             >{order.id}</TableBodyCell
                         >
-                        <TableBodyCell>{order.date}</TableBodyCell>
+                        <TableBodyCell>{(new Date(order.date)).toLocaleString("fr",{year: 'numeric', month: 'numeric', day: 'numeric'})}</TableBodyCell>
                         <TableBodyCell>{order.nom_beneficiaire}</TableBodyCell>
                         <TableBodyCell
                             class="max-w-xs overflow-hidden truncate capitalize"
                         >
                             {order.description}
                         </TableBodyCell>
-                        <TableBodyCell
-                            >{handleInput2(order.montant)}</TableBodyCell
+                        <TableBodyCell class="font-bold "
+                            >{handleInput2(order.montant)} DHS</TableBodyCell
                         >
 
                         <TableBodyCell
@@ -71,6 +115,7 @@
                             >
                                 <button
                                     class="font-medium text-primary-600 focus:ring-0 hover:underline dark:text-primary-500"
+                                    style="z-index: 20;"
                                 >
                                     <Index updateData={order} updating={true} />
                                     <Tooltip>Modifier</Tooltip>
@@ -81,6 +126,8 @@
                                     <SmallModal data={order.id} />
                                     <Tooltip>Supprimer</Tooltip>
                                 </button>
+                            {#if order.status=="Traité"}
+
                                 <a
                                     href={"/virements/pdf/" + order.id}
                                     target="_blank"
@@ -102,6 +149,8 @@
                                     </svg>
                                     <Tooltip>Générer PDF</Tooltip>
                                 </a>
+                            {/if}
+
                             </div>
                         </TableBodyCell>
                     </TableBodyRow>

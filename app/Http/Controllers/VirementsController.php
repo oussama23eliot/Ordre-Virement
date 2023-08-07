@@ -88,7 +88,27 @@ class VirementsController extends Controller
     public function update(UpdateVirementRequest $request, $id)
     {
         $virement = Virements::FindOrFail($id);
-        if ($virement->update($request->all()))
+        if ($virement->beneficiaire_id&&$request['beneficiaire_id']&&$request['beneficiaire_id']!=$virement->beneficiaire_id) {
+            $virement->beneficiaire_id = $request['beneficiaire_id'];
+            $beneficiare = Beneficiaires::FindOrFail($virement->beneficiaire_id);
+            $virement->nom_beneficiaire = $beneficiare->nom_beneficiaire;
+            $virement->nom_banque = $beneficiare->nom_banque;
+            $virement->rib = $beneficiare->rib;
+            $virement->code_swift = $beneficiare->code_swift;
+            $virement->adresse_agence = $beneficiare->adresse_agence;
+        } elseif(!$virement->beneficiaire_id){
+            $virement->beneficiaire_id =  null;
+            $virement->nom_beneficiaire = $request['nom_beneficiaire'];
+            $virement->nom_banque = $request['nom_banque'];
+            $virement->rib = $request['rib'];
+            $virement->code_swift = $request['code_swift'];
+            $virement->adresse_agence = $request['adresse_agence'];
+        }
+        $virement->montant = $request['montant'];
+        $virement->date = $request['date'];
+        $virement->description = $request['description'];
+        $virement->status=$request['status'];
+        if ($virement->update())
             return to_route('virements.index')->with('message', 'Ordre de virement est mis à jour avec succès!');
         return to_route('virements.index')->with('error', 'mise à jour de ordre de virement a échouée!!');
     }

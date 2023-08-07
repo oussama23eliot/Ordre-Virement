@@ -8,7 +8,7 @@ export function handleMoneyInput(money) {
 export function handleInput2(montant) {
     montant = montant.toLocaleString("en-US", {
         currencySign: "standard",
-        style: "currency",
+        // style: "currency",
         currency: "MAD",
     })
     return montant;

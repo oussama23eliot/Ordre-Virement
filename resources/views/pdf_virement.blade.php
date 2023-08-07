@@ -18,7 +18,7 @@
         <div style="display:grid;grid-template-columns:1fr;justify-items: center
 ;width:100%;align-items: center;margin-top:20px">
             <p style="justify-items: center
-;width:100%;align-items: center;text-align:right;text-decoration:underline">Rabat le : {{date("d/m/Y")}}</p>
+;width:100%;align-items: center;text-align:right;text-decoration:underline">Rabat le : {{date('d/m/Y', strtotime($virement["date"]))}}</p>
         </div>
         <div style="display:table;justify-items: center
 ;width:100%;align-items: center;margin-top:30px;border:2px solid black;text-align:center">
@@ -89,9 +89,9 @@
         <div style="display:table;justify-items: center
 ;width:100%;align-items: center;margin-top:30px;border:2px solid black;text-align:center">
             <div style="display:table-cell ;width: 25%;padding:10px 0px;text-align: left;border-bottom: 1px solid black;border-right:2px solid black;">
-                <p style="margin: 0; padding-left: 3px;">Montant</p>
+                <p style="margin: 0; padding-left: 3px;font-weight:600">Montant</p>
             </div>
-            <div style="display:table-cell; width: 75%;padding:10px 0px;border-bottom: 1px solid black;text-align:center">MAD {{number_format($virement["montant"],2)}}</div>
+            <div style="display:table-cell; width: 75%;padding:10px 0px;border-bottom: 1px solid black;text-align:center;font-weight:600">MAD {{number_format($virement["montant"],2)}}</div>
         </div>
         <div style="display:grid;grid-template-columns:1fr;justify-items: center
 ;width:100%;align-items: center;margin-top:20px">
